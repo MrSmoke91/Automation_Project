@@ -29,12 +29,18 @@ class TestHome(TestCase):
         time.sleep(2)
         cls.driver.quit()
 
+    def test_open_home_page(self):
+        self.driver.get(f'{self.base_url}home.html')
+        self.driver.save_screenshot('screenshots/test_open_home_page/01_open_home_page.png')
+
     def test_title(self):
         self.driver.get(f'{self.base_url}home.html')
+        self.driver.save_screenshot('screenshots/test_title/01_open_home_page.png')
         expected_title = 'Automation Project'
+        time.sleep(1)
         title = self.driver.title
+        self.driver.save_screenshot('screenshots/test_title/02_home_page_title.png')
         self.assertEqual(expected_title, title)
-
 
     def test_h1_text(self):
         self.driver.get(f'{self.base_url}home.html')
