@@ -119,7 +119,7 @@ class TestHome(TestCase):
         # Extract the text from each cell
         first_names = [cell.text for cell in first_name_cells]
         # expected names list
-        expected_names = ['John', 'Jane', "Alice", 'Michael', 'Emily']
+        expected_names = ['John', 'Jane', 'Alice', 'Michael', 'Emily']
         # checking that the first names in the table are - John, Jane, Alice, Michael, Emily
         self.assertEqual(expected_names,first_names)
 
