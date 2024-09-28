@@ -112,17 +112,18 @@ class TestHome(TestCase):
     def test_name_list(self):
         # getting access to the html file that contain the home page
         self.driver.get(f'{self.base_url}home.html')
-        # searching and restoring in a variable list of names from the Student Details table
+        # searching and restoring in a variable the Student Details table
         students_table =  self.driver.find_elements(By.CLASS_NAME, 'table-container')[1]
-
-        # Find all cells in the "First Name" column (index 1, as it's the second column)
+        # Find all cells in the "First Name" column (index 2, as it's the second column) - in XPATH index starts from 1
         first_name_cells = students_table.find_elements(By.XPATH, ".//tbody/tr/td[2]")
         # Extract the text from each cell
         first_names = [cell.text for cell in first_name_cells]
         # expected names list
-        expected_names = ['John', 'Jane', "Alice", 'Michael', 'Emily' ]
+        expected_names = ['John', 'Jane', "Alice", 'Michael', 'Emily']
         # checking that the first names in the table are - John, Jane, Alice, Michael, Emily
-        self.assertEqual(expected_names ,first_names)
+        self.assertEqual(expected_names,first_names)
 
     def test_download_button(self):
-        pass
+        # getting access to the html file that contain the home page
+        self.driver.get(f'{self.base_url}home.html')
+
