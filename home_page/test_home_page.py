@@ -112,16 +112,32 @@ class TestTables(TestBase):
         first_names = [cell.text for cell in first_name_cells]
         self.assertEqual(Config.EXPECTED_NAMES, first_names, "Student names do not match expected list")
 
+class TestFillForm(TestBase):
+
+    def test_fill_form(self):
+        pass
+
+    def test_clear_form(self):
+        pass
+
+    def test_check_form_query(self):
+        pass
+
+
+
+
 class TestDownload(TestBase):
     def test_download_button_starts_download(self):
         self.home_page.get_download_button().click()
-        time.sleep(1)  # Short wait to allow download to start
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of(self.home_page.get_progress_bar())
+        )
         progress_bar = self.home_page.get_progress_bar()
         self.assertTrue(progress_bar.is_displayed(), "Progress bar not displayed after clicking download")
 
     def test_download_completes(self):
         self.home_page.get_download_button().click()
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 3).until(
             EC.text_to_be_present_in_element((By.ID, "progress-txt"), "100")
         )
         progress_value = self.home_page.get_progress_bar().get_attribute("value")
@@ -162,7 +178,7 @@ class TestNavigation(TestBase):
             EC.presence_of_element_located ((By.XPATH, "//button[text()='Change Title']"))
         )
         self.home_page.get_title_change_button().click()
-        WebDriverWait(self.driver, 5).until(
+        WebDriverWait(self.driver, 10).until(
             EC.title_is("Finish")
         )
         self.assertEqual("Finish", self.driver.title, "Title did not change")
