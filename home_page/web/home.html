@@ -233,7 +233,7 @@
 
         function confirmMessage(bt) {
             bt.parentElement.style.display = "none";
-            var progress = document.getElementById("download-progress");
+            var progress = document.querySelector("#download-progress")
             progress.value = 0;
             var progressTxt = document.getElementById("progress-txt");
             progressTxt.innerText = "0";

@@ -104,7 +104,7 @@ class TestTables(TestBase):
         second_table = self.driver.find_elements(By.TAG_NAME, 'h2')[1]
         self.assertEqual("Student Details", second_table.text, "Second table title is incorrect")
 
-    def test_row_in_students_table(self):
+    def test_rows_in_students_table(self):
         tables = self.home_page.get_tables()
         rows = tables[1].find_elements(By.TAG_NAME, 'tr')
         self.assertEqual(5, len(rows)-1, "Student table should have 5 rows (excluding header)")
@@ -119,15 +119,17 @@ class TestTables(TestBase):
 class TestFillForm(TestBase):
     def test_fill_form(self):
         # Fill out the form
-        self.driver.find_element(By.ID, "first-name").send_keys("John")
-        self.driver.find_element(By.ID, "last-name").send_keys("Doe")
+        self.driver.find_element(By.ID, "first-name").send_keys("Ido")
+        self.driver.find_element(By.ID, "last-name").send_keys("Hatuell")
         select = Select(self.driver.find_element(By.ID, "city"))
         select.select_by_visible_text("Jerusalem")
-        self.driver.find_element(By.ID, "email").send_keys("john.doe@example.com")
+        self.driver.find_element(By.ID, "email").send_keys("ido1456@gmail.com")
         self.driver.find_element(By.ID, "mobile").send_keys("123-45-678")
         self.driver.find_element(By.ID, "male").click()
         self.driver.find_element(By.ID, "math").click()
         self.driver.find_element(By.ID, "physics").click()
+
+        time.sleep(5)
 
         # Submit the form
         self.driver.find_element(By.ID, "submit-form").click()
@@ -140,7 +142,7 @@ class TestFillForm(TestBase):
     def test_clear_form(self):
         # Fill out the form first
         self.test_fill_form()
-
+        time.sleep(5)
         # Clear the form using the reset button
         self.driver.find_element(By.ID, "reset-form").click()
 
@@ -169,10 +171,10 @@ class TestFillForm(TestBase):
         query_params = parse_qs(parsed_url.query)
 
         # Check if the form data is in the query string
-        self.assertEqual("John", query_params.get('first-name', [''])[0])
-        self.assertEqual("Doe", query_params.get('last-name', [''])[0])
+        self.assertEqual("Ido", query_params.get('first-name', [''])[0])
+        self.assertEqual("Hatuell", query_params.get('last-name', [''])[0])
         self.assertEqual("Jerusalem", query_params.get('city', [''])[0])
-        self.assertEqual("john.doe@example.com", query_params.get('email', [''])[0])
+        self.assertEqual("ido1456@gmail.com", query_params.get('email', [''])[0])
         self.assertEqual("123-45-678", query_params.get('mobile', [''])[0])
         self.assertEqual("male", query_params.get('gender', [''])[0])
         self.assertIn("math", query_params.get('proffesions', []))
@@ -211,6 +213,7 @@ class TestDownload(TestBase):
             EC.invisibility_of_element_located((By.ID, "download-finished-msg"))
         )
         self.assertFalse(finished_msg.is_displayed(), "Download finished message still displayed after confirmation")
+
 class TestNavigation(TestBase):
     def test_next_page(self):
         self.home_page.get_next_page_link().click()

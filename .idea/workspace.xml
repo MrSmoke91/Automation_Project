@@ -6,7 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="461ed798-f110-48a5-9d58-7d017d3ad62a" name="Changes" comment="project">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/home_page/screenshots/test_open_home_page/01_open_home_page.png" beforeDir="false" afterPath="$PROJECT_DIR$/home_page/screenshots/test_home_page/test_title/01_open_home_page.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/home_page/screenshots/test_title/01_open_home_page.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/home_page/screenshots/test_title/02_home_page_title.png" beforeDir="false" afterPath="$PROJECT_DIR$/home_page/screenshots/test_home_page/test_title/02_home_page_title.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/home_page/test_home_page.py" beforeDir="false" afterPath="$PROJECT_DIR$/home_page/test_home_page.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/home_page/web/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/home_page/web/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_home.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +60,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\QA Workspace\Automation_Project_Ido\home_page\screenshots\test_home_page" />
       <recent name="C:\QA Workspace\Automation_Project_Ido\home_page" />
     </key>
   </component>
@@ -146,7 +152,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727576498487</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="project">
+      <option name="closed" value="true" />
+      <created>1727609193938</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1727609193938</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
