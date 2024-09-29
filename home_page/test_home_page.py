@@ -5,6 +5,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 import time
+from selenium.webdriver.support.ui import Select
+
+
 
 
 # Configuration
@@ -112,16 +115,68 @@ class TestTables(TestBase):
         first_names = [cell.text for cell in first_name_cells]
         self.assertEqual(Config.EXPECTED_NAMES, first_names, "Student names do not match expected list")
 
-class TestFillForm(TestBase):
 
+class TestFillForm(TestBase):
     def test_fill_form(self):
-        pass
+        # Fill out the form
+        self.driver.find_element(By.ID, "first-name").send_keys("John")
+        self.driver.find_element(By.ID, "last-name").send_keys("Doe")
+        select = Select(self.driver.find_element(By.ID, "city"))
+        select.select_by_visible_text("Jerusalem")
+        self.driver.find_element(By.ID, "email").send_keys("john.doe@example.com")
+        self.driver.find_element(By.ID, "mobile").send_keys("123-45-678")
+        self.driver.find_element(By.ID, "male").click()
+        self.driver.find_element(By.ID, "math").click()
+        self.driver.find_element(By.ID, "physics").click()
+
+        # Submit the form
+        self.driver.find_element(By.ID, "submit-form").click()
+
+        # Check if the form was submitted successfully
+        WebDriverWait(self.driver, 10).until(
+            EC.url_contains('?')  # Assuming the form submission adds query parameters to the URL
+        )
 
     def test_clear_form(self):
-        pass
+        # Fill out the form first
+        self.test_fill_form()
+
+        # Clear the form using the reset button
+        self.driver.find_element(By.ID, "reset-form").click()
+
+        # Check if all fields are cleared
+        WebDriverWait(self.driver, 10).until(
+            EC.text_to_be_present_in_element_value((By.ID, "first-name"), "")
+        )
+        self.assertEqual("", self.driver.find_element(By.ID, "first-name").get_attribute("value"))
+        self.assertEqual("", self.driver.find_element(By.ID, "last-name").get_attribute("value"))
+        self.assertEqual("", self.driver.find_element(By.ID, "email").get_attribute("value"))
+        self.assertEqual("", self.driver.find_element(By.ID, "mobile").get_attribute("value"))
+        self.assertFalse(self.driver.find_element(By.ID, "male").is_selected())
+        self.assertFalse(self.driver.find_element(By.ID, "math").is_selected())
+        self.assertFalse(self.driver.find_element(By.ID, "physics").is_selected())
 
     def test_check_form_query(self):
-        pass
+        # Fill out the form
+        self.test_fill_form()
+
+        # Get the current URL after form submission
+        current_url = self.driver.current_url
+
+        # Parse the query string
+        from urllib.parse import urlparse, parse_qs
+        parsed_url = urlparse(current_url)
+        query_params = parse_qs(parsed_url.query)
+
+        # Check if the form data is in the query string
+        self.assertEqual("John", query_params.get('first-name', [''])[0])
+        self.assertEqual("Doe", query_params.get('last-name', [''])[0])
+        self.assertEqual("Jerusalem", query_params.get('city', [''])[0])
+        self.assertEqual("john.doe@example.com", query_params.get('email', [''])[0])
+        self.assertEqual("123-45-678", query_params.get('mobile', [''])[0])
+        self.assertEqual("male", query_params.get('gender', [''])[0])
+        self.assertIn("math", query_params.get('proffesions', []))
+        self.assertIn("physics", query_params.get('proffesions', []))
 
 
 
