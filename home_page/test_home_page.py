@@ -1,129 +1,184 @@
-# the class we inherit
-from unittest import TestCase
-
-# the webdriver module is for automating browsers
+import unittest
 from selenium import webdriver
-
-# the By class is for searching web elements By tag_name, id etc.
 from selenium.webdriver.common.by import By
-
-# with chrome Options class you can configure the browser (maximize
-from selenium.webdriver.chrome.options import Options
-
-# operating system - for current working directory
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import os
-
-#for sleep so you can see the test slowly
 import time
 
-class TestHome(TestCase):
 
-    driver = None
-    base_url = f'file://{os.getcwd()}/web/'
+# Configuration
+class Config:
+    BASE_URL = f'file://{os.getcwd()}/web/'
+    HOME_PAGE_TITLE = 'Automation Project'
+    NEXT_PAGE_TITLE = 'Next Page'
+    HOME_PAGE_H1_TEXT = 'Automation Project - Main Page'
+    EXPECTED_NAMES = ['John', 'Jane', 'Alice', 'Michael', 'Emily']
+
+class BasePage:
+    def __init__(self, driver):
+        self.driver = driver
+
+    def find_element(self, by, value):
+        return WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((by, value))
+        )
+
+    def find_elements(self, by, value):
+        return WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((by, value))
+        )
+
+    def click_element(self, by, value):
+        element = self.find_element(by, value)
+        element.click()
+
+class HomePage(BasePage):
+    def get_h1_text(self):
+        return self.find_element(By.TAG_NAME, 'h1').text
+
+    def get_tables(self):
+        return self.find_elements(By.CLASS_NAME, 'table-container')
+
+    def get_download_button(self):
+        return self.find_element(By.XPATH, "//button[text()='Start Downloading']")
+
+    def get_progress_bar(self):
+        return self.find_element(By.ID, "download-progress")
+
+    def get_progress_text(self):
+        return self.find_element(By.ID, "progress-txt")
+
+    def get_finished_message(self):
+        return self.find_element(By.ID, "download-finished-msg")
+
+    def get_ok_button(self):
+        return self.find_element(By.XPATH, "//button[text()='OK']")
+
+    def get_next_page_link(self):
+        return self.find_element(By.XPATH, "//a[text()='Next Page']")
+
+    def get_title_change_button(self):
+        return self.find_element(By.XPATH, "//button[text()='Change Title']")
+
+    def get_back_to_homepage_link(self):
+        return self.find_element(By.XPATH, "//a[text()='Back to Home Page']")
+
+class TestBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.driver = webdriver.Chrome()
 
     @classmethod
     def tearDownClass(cls):
-        time.sleep(2)
         cls.driver.quit()
 
-    def test_open_home_page(self):
-        self.driver.get(f'{self.base_url}home.html')
-        self.driver.save_screenshot('screenshots/test_open_home_page/01_open_home_page.png')
+    def setUp(self):
+        self.driver.get(Config.BASE_URL + 'home.html')
+        self.home_page = HomePage(self.driver)
 
+class TestHomePage(TestBase):
     def test_title(self):
-        self.driver.get(f'{self.base_url}home.html')
-        self.driver.save_screenshot('screenshots/test_title/01_open_home_page.png')
-        expected_title = 'Automation Project'
-        time.sleep(1)
-        title = self.driver.title
-        self.driver.save_screenshot('screenshots/test_title/02_home_page_title.png')
-        self.assertEqual(expected_title, title)
+        self.assertEqual(Config.HOME_PAGE_TITLE, self.driver.title, "Page title is incorrect")
 
     def test_h1_text(self):
-        self.driver.get(f'{self.base_url}home.html')
-        h1 = self.driver.find_element(By.TAG_NAME, 'h1')
-        expected_h1_text = 'Automation Project - Main Page'
-        self.assertEqual(expected_h1_text ,h1.text)
+        self.assertEqual(Config.HOME_PAGE_H1_TEXT, self.home_page.get_h1_text(), "H1 text is incorrect")
 
-    def testUrl(self):
-        url = self.driver.current_url
-        url ='aaa?bbb'
-        parts = url.split('?')
-        print(parts)
-
-    # test for a single h1 tag in the code
     def test_only_single_h1(self):
-        # getting access to the html file that contain the home page
-        self.driver.get(f'{self.base_url}home.html')
-        # searching and restoring in a variable a list of all the cases of h1 tags
         h1_list = self.driver.find_elements(By.TAG_NAME, 'h1')
-        # the expected cases of h1 - 1
-        expected_amount_of_h1 = 1
-        # checking that there is only one element in the list
-        self.assertEqual(expected_amount_of_h1, len(h1_list))
+        self.assertEqual(1, len(h1_list), "There should be only one h1 tag")
 
+class TestTables(TestBase):
     def test_for_only_two_tables(self):
-        # getting access to the html file that contain the home page
-        self.driver.get(f'{self.base_url}home.html')
-        # searching and restoring in a variable list of tables elements from the home page
-        tables = self.driver.find_elements(By.CLASS_NAME, 'table-container')
-        # the expected amount of tables
-        expected_amount_of_tables = 2
-        # checking that there are exactly two elements
-        self.assertEqual(expected_amount_of_tables, len(tables))
+        tables = self.home_page.get_tables()
+        self.assertEqual(2, len(tables), "There should be exactly two tables")
 
     def test_first_table_title(self):
-        # getting access to the html file that contain the home page
-        self.driver.get(f'{self.base_url}home.html')
-        # searching and restoring in a variable the first table element from the home page
         first_table = self.driver.find_element(By.TAG_NAME, 'h2')
-        # the expected title of the first table
-        expected_table_title = 'Cities of the World'
-        # checking that the first table's title is 'Cities of the World'
-        self.assertEqual(expected_table_title, first_table.text)
+        self.assertEqual("Cities of the World", first_table.text, "First table title is incorrect")
 
     def test_second_table_title(self):
-        # getting access to the html file that contain the home page
-        self.driver.get(f'{self.base_url}home.html')
-        # searching and restoring in a variable the first table element from the home page
         second_table = self.driver.find_elements(By.TAG_NAME, 'h2')[1]
-        # the expected title of the second table
-        expected_table_title = 'Student Details'
-        # checking that the second table's title is 'Student Details'
-        self.assertEqual(expected_table_title, second_table.text)
+        self.assertEqual("Student Details", second_table.text, "Second table title is incorrect")
 
     def test_row_in_students_table(self):
-        # getting access to the html file that contain the home page
-        self.driver.get(f'{self.base_url}home.html')
-        # searching and restoring in a variable list of tables elements from the home page
-        tables = self.driver.find_elements(By.CLASS_NAME, 'table-container')[1]
-        # searching for all the rows in the table
-        rows = tables.find_elements(By.TAG_NAME, 'tr')
-        # getting the amount of rows - not counting the first row in a table - used for headlines
-        rows_count = len(rows)-1
-        # expected amount of rows
-        expected_rows_count = 5
-        # checking that there are 5 rows in the table
-        self.assertEqual(expected_rows_count, rows_count)
+        tables = self.home_page.get_tables()
+        rows = tables[1].find_elements(By.TAG_NAME, 'tr')
+        self.assertEqual(5, len(rows)-1, "Student table should have 5 rows (excluding header)")
 
     def test_name_list(self):
-        # getting access to the html file that contain the home page
-        self.driver.get(f'{self.base_url}home.html')
-        # searching and restoring in a variable the Student Details table
-        students_table =  self.driver.find_elements(By.CLASS_NAME, 'table-container')[1]
-        # Find all cells in the "First Name" column (index 2, as it's the second column) - in XPATH index starts from 1
-        first_name_cells = students_table.find_elements(By.XPATH, ".//tbody/tr/td[2]")
-        # Extract the text from each cell
+        tables = self.home_page.get_tables()
+        first_name_cells = tables[1].find_elements(By.XPATH, ".//tbody/tr/td[2]")
         first_names = [cell.text for cell in first_name_cells]
-        # expected names list
-        expected_names = ['John', 'Jane', 'Alice', 'Michael', 'Emily']
-        # checking that the first names in the table are - John, Jane, Alice, Michael, Emily
-        self.assertEqual(expected_names,first_names)
+        self.assertEqual(Config.EXPECTED_NAMES, first_names, "Student names do not match expected list")
 
-    def test_download_button(self):
-        # getting access to the html file that contain the home page
-        self.driver.get(f'{self.base_url}home.html')
+class TestDownload(TestBase):
+    def test_download_button_starts_download(self):
+        self.home_page.get_download_button().click()
+        time.sleep(1)  # Short wait to allow download to start
+        progress_bar = self.home_page.get_progress_bar()
+        self.assertTrue(progress_bar.is_displayed(), "Progress bar not displayed after clicking download")
 
+    def test_download_completes(self):
+        self.home_page.get_download_button().click()
+        WebDriverWait(self.driver, 10).until(
+            EC.text_to_be_present_in_element((By.ID, "progress-txt"), "100")
+        )
+        progress_value = self.home_page.get_progress_bar().get_attribute("value")
+        self.assertEqual("100", progress_value, "Download did not complete")
+
+    def test_finished_message_and_dismissal(self):
+        self.home_page.get_download_button().click()
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.ID, "download-finished-msg"))
+        )
+        finished_msg = self.home_page.get_finished_message()
+        self.assertTrue(finished_msg.is_displayed(), "Download finished message not displayed")
+
+        self.home_page.get_ok_button().click()
+        WebDriverWait(self.driver, 10).until(
+            EC.invisibility_of_element_located((By.ID, "download-finished-msg"))
+        )
+        self.assertFalse(finished_msg.is_displayed(), "Download finished message still displayed after confirmation")
+class TestNavigation(TestBase):
+    def test_next_page(self):
+        self.home_page.get_next_page_link().click()
+        WebDriverWait(self.driver, 10).until(
+            EC.title_is(Config.NEXT_PAGE_TITLE)
+        )
+        self.assertEqual(Config.NEXT_PAGE_TITLE, self.driver.title, "Navigation to next page failed")
+
+    def test_next_page_url(self):
+        self.home_page.get_next_page_link().click()
+        WebDriverWait(self.driver, 5).until(
+            EC.url_contains('nextpage.html')
+        )
+        expected_url = "file:///C:/QA%20Workspace/Automation_Project_Ido/home_page/web/nextpage.html"
+        self.assertEqual(expected_url, self.driver.current_url, "URL is incorrect")
+
+    def test_next_page_title_change(self):
+        self.home_page.get_next_page_link().click()
+        WebDriverWait(self.driver, 3).until(
+            EC.presence_of_element_located ((By.XPATH, "//button[text()='Change Title']"))
+        )
+        self.home_page.get_title_change_button().click()
+        WebDriverWait(self.driver, 5).until(
+            EC.title_is("Finish")
+        )
+        self.assertEqual("Finish", self.driver.title, "Title did not change")
+
+    def test_navigate_back_to_main_page(self):
+        self.home_page.get_next_page_link().click()
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located ((By.XPATH, "//a[text()='Back to Home Page']"))
+        )
+        self.home_page.get_back_to_homepage_link().click()
+        WebDriverWait(self.driver, 10).until(
+            EC.title_is(Config.HOME_PAGE_TITLE)
+        )
+        expected_url = "file:///C:/QA%20Workspace/Automation_Project_Ido/home_page/web/home.html"
+        self.assertEqual(expected_url, self.driver.current_url, "URL is incorrect")
+
+
+if __name__ == "__main__":
+    unittest.main()
